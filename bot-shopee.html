@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Shopee - ReJStore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .config-section, .links-section, .results-section {
+            margin-bottom: 25px;
+            padding: 25px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            background: #fafafa;
+        }
+
+        h3 {
+            color: #444;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        #convertedLinks {
+            background: #f8f9fa;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-top: 20px;
+        }
+
+        .instructions h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ Bot Shopee - ReJStore</h1>
+            <p>Automação para conversão de links de afiliado</p>
+        </div>
+        
+        <div class="config-section">
+            <h3>⚙️ Configurações</h3>
+            <div class="input-group">
+                <label for="affiliateCode">Código de Afiliado:</label>
+                <input type="text" id="affiliateCode" placeholder="Ex: AF12345 ou seu código de afiliado" />
+            </div>
+            <div class="input-group">
+                <label for="apiKey">Chave API Arrocy-WG:</label>
+                <input type="text" id="apiKey" placeholder="Cole sua chave API aqui" />
+            </div>
+            <div class="input-group">
+                <label for="groupId">ID do Grupo:</label>
+                <input type="text" id="groupId" placeholder="ID do grupo do WhatsApp" />
+            </div>
+        </div>
+
+        <div class="links-section">
+            <h3>🔗 Links da Shopee</h3>
+            <div class="input-group">
+                <label for="linksInput">Cole os links abaixo (um por linha):</label>
+                <textarea id="linksInput" placeholder="https://shopee.com.br/produto-123
+https://shopee.com.br/promocao-especial
+https://shopee.com.br/oferta-limiteda"></textarea>
+            </div>
+            <button class="btn-primary" onclick="convertLinks()">🔄 Converter Links</button>
+        </div>
+
+        <div class="results-section">
+            <h3>📋 Links Convertidos</h3>
+            <div class="input-group">
+                <label for="convertedLinks">Links com afiliado (prontos para usar):</label>
+                <textarea id="convertedLinks" readonly></textarea>
+            </div>
+            <div class="button-group">
+                <button class="btn-secondary" onclick="copyResults()">📋 Copiar Links</button>
+                <button class="btn-success" onclick="sendToGroup()">📤 Enviar para Grupo</button>
+                <button class="btn-danger" onclick="clearAll()">🗑️ Limpar Tudo</button>
+            </div>
+        </div>
+
+        <div class="status info" id="status">Pronto para começar! 🚀</div>
+
+        <div class="instructions">
+            <h4>📝 Como usar:</h4>
+            <ol>
+                <li><strong>Configure</strong> seu código de afiliado nos campos acima</li>
+                <li><strong>Cole os links</strong> da Shopee no campo de links (um por linha)</li>
+                <li><strong>Clique em "Converter Links"</strong> para adicionar seu código de afiliado</li>
+                <li><strong>Copie os links convertidos</strong> ou envie diretamente para o grupo</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        class ShopeeBot {
+            constructor() {
+                this.initializeEventListeners();
+                this.loadSavedData();
+            }
+
+            initializeEventListeners() {
+                // Auto-save quando os campos são alterados
+                document.getElementById('affiliateCode').addEventListener('input', () => this.saveData());
+                document.getElementById('apiKey').addEventListener('input', () => this.saveData());
+                document.getElementById('groupId').addEventListener('input', () => this.saveData());
+                document.getElementById('linksInput').addEventListener('input', () => this.saveData());
+            }
+
+            saveData() {
+                const data = {
+                    affiliateCode: document.getElementById('affiliateCode').value,
+                    apiKey: document.getElementById('apiKey').value,
+                    groupId: document.getElementById('groupId').value,
+                    linksInput: document.getElementById('linksInput').value
+                };
+                localStorage.setItem('shopeeBotData', JSON.stringify(data));
+            }
+
+            loadSavedData() {
+                const saved = localStorage.getItem('shopeeBotData');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        document.getElementById('affiliateCode').value = data.affiliateCode || '';
+                        document.getElementById('apiKey').value = data.apiKey || '';
+                        document.getElementById('groupId').value = data.groupId || '';
+                        document.getElementById('linksInput').value = data.linksInput || '';
+                        this.updateStatus('Dados anteriores carregados! 📁', 'info');
+                    } catch (e) {
+                        console.log('Nenhum dado anterior encontrado');
+                    }
+                }
+            }
+
+            updateStatus(message, type = 'info') {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = `status ${type}`;
+                
+                // Auto-esconder mensagens de sucesso
+                if (type === 'success') {
+                    setTimeout(() => {
+                        if (status.textContent === message) {
+                            status.textContent = 'Pronto para novas ações! ✅';
+                            status.className = 'status info';
+                        }
+                    }, 4000);
+                }
+            }
+
+            validateInputs() {
+                const affiliateCode = document.getElementById('affiliateCode').value.trim();
+                const linksInput = document.getElementById('linksInput').value.trim();
+
+                if (!affiliateCode) {
+                    this.updateStatus('❌ Por favor, insira seu código de afiliado!', 'error');
+                    return false;
+                }
+
+                if (!linksInput) {
+                    this.updateStatus('❌ Cole alguns links da Shopee primeiro!', 'error');
+                    return false;
+                }
+
+                const links = this.extractLinks(linksInput);
+                if (links.length === 0) {
+                    this.updateStatus('❌ Nenhum link válido da Shopee encontrado!', 'error');
+                    return false;
+                }
+
+                return { affiliateCode, links };
+            }
+
+            extractLinks(text) {
+                // Encontra URLs da Shopee
+                const urlRegex = /https?:\/\/[^\s]+\.shopee\.[^\s]+/gi;
+                const links = text.match(urlRegex) || [];
+                return links.filter(link => 
+                    link.includes('shopee.com.br') || 
+                    link.includes('shopee.com') ||
+                    link.includes('shp.ee')
+                ).map(link => link.trim());
+            }
+
+            convertLinks() {
+                const validation = this.validateInputs();
+                if (!validation) return;
+
+                const { affiliateCode, links } = validation;
+                
+                this.updateStatus('⏳ Convertendo links...', 'info');
+
+                try {
+                    const convertedLinks = [];
+                    
+                    for (const link of links) {
+                        const converted = this.convertSingleLink(link, affiliateCode);
+                        convertedLinks.push(converted);
+                    }
+
+                    const resultsText = convertedLinks.join('\n\n');
+                    document.getElementById('convertedLinks').value = resultsText;
+                    
+                    this.updateStatus(`✅ ${convertedLinks.length} links convertidos com sucesso!`, 'success');
+                    this.saveData();
+
+                } catch (error) {
+                    this.updateStatus('❌ Erro ao converter links', 'error');
+                    console.error('Erro:', error);
+                }
+            }
+
+            convertSingleLink(originalLink, affiliateCode) {
+                try {
+                    // Lógica de conversão - ADAPTE ESTA PARTE CONFORME SUA NECESSIDADE
+                    let convertedLink = originalLink;
+                    
+                    // Remove parâmetros existentes para evitar conflitos
+                    const baseLink = originalLink.split('?')[0];
+                    const baseLinkWithoutRef = baseLink.split('&')[0];
+                    
+                    // Adiciona o código de afiliado
+                    // ⚠️ ADAPTE ESTA LÓGICA PARA O SEU SISTEMA DE AFILIADOS
+                    if (baseLinkWithoutRef.includes('?')) {
+                        convertedLink = `${baseLinkWithoutRef}&affiliate=${affiliateCode}`;
+                    } else {
+                        convertedLink = `${baseLinkWithoutRef}?affiliate=${affiliateCode}`;
+                    }
+                    
+                    // Adiciona parâmetros UTM para tracking
+                    convertedLink += `&utm_source=ReJStore&utm_medium=affiliate&utm_campaign=${affiliateCode}`;
+                    
+                    return `${convertedLink}\n💎 *Promoção ReJStore* 💎`;
+                    
+                } catch (error) {
+                    console.error('Erro ao converter link:', originalLink, error);
+                    return `❌ ERRO: ${originalLink}`;
+                }
+            }
+
+            copyResults() {
+                const results = document.getElementById('convertedLinks');
+                const textToCopy = results.value.trim();
+
+                if (!textToCopy) {
+                    this.updateStatus('❌ Não há nada para copiar!', 'error');
+                    return;
+                }
+
+                // Seleciona e copia o texto
+                results.select();
+                results.setSelectionRange(0, 99999); // Para mobile
+
+                try {
+                    // Método moderno
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        this.updateStatus('📋 Links copiados para a área de transferência!', 'success');
+                    }).catch(() => {
+                        // Fallback para navegadores antigos
+                        document.execCommand('copy');
+                        this.updateStatus('📋 Links copiados para a área de transferência!', 'success');
+                    });
+                } catch (error) {
+                    this.updateStatus('❌ Erro ao copiar links', 'error');
+                }
+            }
+
+            async sendToGroup() {
+                const apiKey = document.getElementById('apiKey').value.trim();
+                const groupId = document.getElementById('groupId').value.trim();
+                const convertedLinks = document.getElementById('convertedLinks').value.trim();
+
+                if (!apiKey) {
+                    this.updateStatus('❌ Insira a chave da API Arrocy-WG!', 'error');
+                    return;
+                }
+
+                if (!groupId) {
+                    this.updateStatus('❌ Insira o ID do grupo!', 'error');
+                    return;
+                }
+
+                if (!convertedLinks) {
+                    this.updateStatus('❌ Converta os links primeiro!', 'error');
+                    return;
+                }
+
+                this.updateStatus('⏳ Enviando mensagens para o grupo...', 'info');
+
+                try {
+                    const messages = convertedLinks.split('\n\n').filter(msg => msg.trim());
+                    let successCount = 0;
+
+                    for (const message of messages) {
+                        const success = await this.sendSingleMessage(apiKey, groupId, message);
+                        if (success) successCount++;
+                        
+                        // Delay entre mensagens para não sobrecarregar
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+
+                    this.updateStatus(`✅ ${successCount} mensagens enviadas com sucesso!`, 'success');
+
+                } catch (error) {
+                    this.updateStatus(`❌ Erro ao enviar mensagens: ${error.message}`, 'error');
+                }
+            }
+
+            async sendSingleMessage(apiKey, groupId, message) {
+                try {
+                    // ⚠️ SUBSTITUA PELA URL REAL DA SUA API ARROCY-WG
+                    const apiUrl = 'https://sua-api-arrocy.com/send-message';
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            group_id: groupId,
+                            message: message,
+                            type: 'text'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    return data.success === true;
+
+                } catch (error) {
+                    console.error('Erro ao enviar mensagem:', error);
+                    return false;
+                }
+            }
+
+            clearAll() {
+                if (confirm('Tem certeza que deseja limpar todos os campos?')) {
+                    document.getElementById('linksInput').value = '';
+                    document.getElementById('convertedLinks').value = '';
+                    this.updateStatus('Campos limpos! 🧹', 'info');
+                    this.saveData();
+                }
+            }
+        }
+
+        // Inicialização do bot quando a página carrega
+        let shopeeBot;
+        document.addEventListener('DOMContentLoaded', () => {
+            shopeeBot = new ShopeeBot();
+        });
+
+        // Funções globais para os botões HTML
+        function convertLinks() {
+            shopeeBot.convertLinks();
+        }
+
+        function copyResults() {
+            shopeeBot.copyResults();
+        }
+
+        function sendToGroup() {
+            shopeeBot.sendToGroup();
+        }
+
+        function clearAll() {
+            shopeeBot.clearAll();
+        }
+    </script>
+</body>
+</html>
