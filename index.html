@@ -197,6 +197,12 @@
             color: #555;
         }
 
+        .help-text {
+            font-size: 13px;
+            color: #777;
+            margin-top: 5px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -218,22 +224,29 @@
     <div class="container">
         <div class="header">
             <h1>🛍️ Bot Shopee - ReJStore</h1>
-            <p>Automação para conversão de links de afiliado</p>
+            <p>Automação para conversão de links de afiliado via Z-API</p>
         </div>
         
         <div class="config-section">
-            <h3>⚙️ Configurações</h3>
+            <h3>⚙️ Configurações Z-API</h3>
             <div class="input-group">
                 <label for="affiliateCode">Código de Afiliado:</label>
                 <input type="text" id="affiliateCode" placeholder="Ex: AF12345 ou seu código de afiliado" />
             </div>
             <div class="input-group">
-                <label for="apiKey">Chave API Arrocy-WG:</label>
-                <input type="text" id="apiKey" placeholder="Cole sua chave API aqui" />
+                <label for="instanceId">ID da Instância Z-API:</label>
+                <input type="text" id="instanceId" placeholder="Ex: 3EB0123456789ABCD" />
+                <div class="help-text">Encontre no painel Z-API</div>
             </div>
             <div class="input-group">
-                <label for="groupId">ID do Grupo:</label>
-                <input type="text" id="groupId" placeholder="ID do grupo do WhatsApp" />
+                <label for="token">Token da Instância:</label>
+                <input type="text" id="token" placeholder="Cole seu token aqui" />
+                <div class="help-text">Copie nas configurações da instância Z-API</div>
+            </div>
+            <div class="input-group">
+                <label for="groupId">ID do Grupo WhatsApp:</label>
+                <input type="text" id="groupId" placeholder="Ex: 5511999999999-1234567890@g.us ou 120363019502650977@g.us" />
+                <div class="help-text">Formato: número-timestamp@g.us ou novo formato grupo@g.us</div>
             </div>
         </div>
 
@@ -266,11 +279,14 @@ https://shopee.com.br/oferta-limiteda"></textarea>
         <div class="instructions">
             <h4>📝 Como usar:</h4>
             <ol>
-                <li><strong>Configure</strong> seu código de afiliado nos campos acima</li>
-                <li><strong>Cole os links</strong> da Shopee no campo de links (um por linha)</li>
-                <li><strong>Clique em "Converter Links"</strong> para adicionar seu código de afiliado</li>
-                <li><strong>Copie os links convertidos</strong> ou envie diretamente para o grupo</li>
+                <li><strong>Configure a Z-API:</strong> Insira o ID da instância e token do seu painel Z-API</li>
+                <li><strong>Código de afiliado:</strong> Configure seu código de afiliado da Shopee</li>
+                <li><strong>ID do grupo:</strong> Insira o ID do grupo do WhatsApp (formato: número@g.us)</li>
+                <li><strong>Cole os links:</strong> da Shopee no campo de links (um por linha)</li>
+                <li><strong>Converta:</strong> Clique em "Converter Links" para adicionar seu código de afiliado</li>
+                <li><strong>Envie:</strong> Copie os links convertidos ou envie diretamente para o grupo via Z-API</li>
             </ol>
+            <p style="margin-top: 15px; color: #666;"><strong>Nota:</strong> Para obter o ID do grupo, você pode usar o método GET /chats da Z-API documentação.</p>
         </div>
     </div>
 
@@ -284,7 +300,8 @@ https://shopee.com.br/oferta-limiteda"></textarea>
             initializeEventListeners() {
                 // Auto-save quando os campos são alterados
                 document.getElementById('affiliateCode').addEventListener('input', () => this.saveData());
-                document.getElementById('apiKey').addEventListener('input', () => this.saveData());
+                document.getElementById('instanceId').addEventListener('input', () => this.saveData());
+                document.getElementById('token').addEventListener('input', () => this.saveData());
                 document.getElementById('groupId').addEventListener('input', () => this.saveData());
                 document.getElementById('linksInput').addEventListener('input', () => this.saveData());
             }
@@ -292,26 +309,23 @@ https://shopee.com.br/oferta-limiteda"></textarea>
             saveData() {
                 const data = {
                     affiliateCode: document.getElementById('affiliateCode').value,
-                    apiKey: document.getElementById('apiKey').value,
+                    instanceId: document.getElementById('instanceId').value,
+                    token: document.getElementById('token').value,
                     groupId: document.getElementById('groupId').value,
                     linksInput: document.getElementById('linksInput').value
                 };
-                localStorage.setItem('shopeeBotData', JSON.stringify(data));
+                // Usando variáveis em memória ao invés de localStorage
+                this.savedData = data;
             }
 
             loadSavedData() {
-                const saved = localStorage.getItem('shopeeBotData');
-                if (saved) {
-                    try {
-                        const data = JSON.parse(saved);
-                        document.getElementById('affiliateCode').value = data.affiliateCode || '';
-                        document.getElementById('apiKey').value = data.apiKey || '';
-                        document.getElementById('groupId').value = data.groupId || '';
-                        document.getElementById('linksInput').value = data.linksInput || '';
-                        this.updateStatus('Dados anteriores carregados! 📁', 'info');
-                    } catch (e) {
-                        console.log('Nenhum dado anterior encontrado');
-                    }
+                if (this.savedData) {
+                    document.getElementById('affiliateCode').value = this.savedData.affiliateCode || '';
+                    document.getElementById('instanceId').value = this.savedData.instanceId || '';
+                    document.getElementById('token').value = this.savedData.token || '';
+                    document.getElementById('groupId').value = this.savedData.groupId || '';
+                    document.getElementById('linksInput').value = this.savedData.linksInput || '';
+                    this.updateStatus('Dados anteriores carregados! 📁', 'info');
                 }
             }
 
@@ -449,12 +463,18 @@ https://shopee.com.br/oferta-limiteda"></textarea>
             }
 
             async sendToGroup() {
-                const apiKey = document.getElementById('apiKey').value.trim();
+                const instanceId = document.getElementById('instanceId').value.trim();
+                const token = document.getElementById('token').value.trim();
                 const groupId = document.getElementById('groupId').value.trim();
                 const convertedLinks = document.getElementById('convertedLinks').value.trim();
 
-                if (!apiKey) {
-                    this.updateStatus('❌ Insira a chave da API Arrocy-WG!', 'error');
+                if (!instanceId) {
+                    this.updateStatus('❌ Insira o ID da instância Z-API!', 'error');
+                    return;
+                }
+
+                if (!token) {
+                    this.updateStatus('❌ Insira o token da instância Z-API!', 'error');
                     return;
                 }
 
@@ -468,51 +488,67 @@ https://shopee.com.br/oferta-limiteda"></textarea>
                     return;
                 }
 
-                this.updateStatus('⏳ Enviando mensagens para o grupo...', 'info');
+                this.updateStatus('⏳ Enviando mensagens para o grupo via Z-API...', 'info');
 
                 try {
                     const messages = convertedLinks.split('\n\n').filter(msg => msg.trim());
                     let successCount = 0;
+                    let errorCount = 0;
 
                     for (const message of messages) {
-                        const success = await this.sendSingleMessage(apiKey, groupId, message);
-                        if (success) successCount++;
+                        const success = await this.sendSingleMessage(instanceId, token, groupId, message);
+                        if (success) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
                         
-                        // Delay entre mensagens para não sobrecarregar
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        // Delay entre mensagens para não sobrecarregar (5 segundos como Z-API recomenda)
+                        await new Promise(resolve => setTimeout(resolve, 5000));
                     }
 
-                    this.updateStatus(`✅ ${successCount} mensagens enviadas com sucesso!`, 'success');
+                    if (errorCount === 0) {
+                        this.updateStatus(`✅ ${successCount} mensagens enviadas com sucesso!`, 'success');
+                    } else {
+                        this.updateStatus(`⚠️ ${successCount} enviadas, ${errorCount} falharam`, 'error');
+                    }
 
                 } catch (error) {
                     this.updateStatus(`❌ Erro ao enviar mensagens: ${error.message}`, 'error');
                 }
             }
 
-            async sendSingleMessage(apiKey, groupId, message) {
+            async sendSingleMessage(instanceId, token, groupId, message) {
                 try {
-                    // ⚠️ SUBSTITUA PELA URL REAL DA SUA API ARROCY-WG
-                    const apiUrl = 'https://sua-api-arrocy.com/send-message';
+                    // URL da API Z-API para envio de mensagens de texto
+                    const apiUrl = `https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`;
                     
+                    // Prepara o corpo da requisição
+                    const body = {
+                        phone: groupId, // ID do grupo no formato correto
+                        message: message
+                    };
+
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${apiKey}`,
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({
-                            group_id: groupId,
-                            message: message,
-                            type: 'text'
-                        })
+                        body: JSON.stringify(body)
                     });
 
                     if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Erro HTTP:', response.status, errorText);
                         throw new Error(`HTTP ${response.status}`);
                     }
 
                     const data = await response.json();
-                    return data.success === true;
+                    console.log('Resposta Z-API:', data);
+                    
+                    // Z-API retorna sucesso com diferentes formatos
+                    // Verifica se não há erro na resposta
+                    return !data.error && (data.value === true || data.messageId);
 
                 } catch (error) {
                     console.error('Erro ao enviar mensagem:', error);
