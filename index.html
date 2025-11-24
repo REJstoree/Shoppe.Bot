@@ -1,168 +1,245 @@
-<title>Bot Shopee - ReJStore
-{
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
-body {
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-min-height: 100vh;
-padding: 20px;
-}
-.container {
-max-width: 900px;
-margin: 0 auto;
-background: white;
-border-radius: 15px;
-padding: 30px;
-box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-}
-.header {
-text-align: center;
-margin-bottom: 30px;
-padding-bottom: 20px;
-border-bottom: 2px solid #f0f0f0;
-}
-.header h1 {
-color: #333;
-font-size: 2.2em;
-margin-bottom: 10px;
-}
-.header p {
-color: #666;
-font-size: 1.1em;
-}
-.config-section, .links-section, .results-section {
-margin-bottom: 25px;
-padding: 25px;
-border: 2px solid #e8e8e8;
-border-radius: 12px;
-background: #fafafa;
-}
-h3 {
-color: #444;
-margin-bottom: 20px;
-font-size: 1.3em;
-display: flex;
-align-items: center;
-gap: 10px;
-}
-.input-group {
-margin-bottom: 20px;
-}
-label {
-display: block;
-margin-bottom: 8px;
-font-weight: 600;
-color: #555;
-}
-input, textarea {
-width: 100%;
-padding: 14px;
-border: 2px solid #ddd;
-border-radius: 8px;
-font-size: 15px;
-transition: all 0.3s ease;
-font-family: inherit;
-}
-input:focus, textarea:focus {
-border-color: #667eea;
-outline: none;
-box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-textarea {
-resize: vertical;
-min-height: 120px;
-}
-#convertedLinks {
-background: #f8f9fa;
-font-family: 'Courier New', monospace;
-font-size: 14px;
-}
-.button-group {
-display: flex;
-gap: 10px;
-flex-wrap: wrap;
-}
-button {
-padding: 14px 24px;
-border: none;
-border-radius: 8px;
-cursor: pointer;
-font-size: 15px;
-font-weight: 600;
-transition: all 0.3s ease;
-display: flex;
-align-items: center;
-gap: 8px;
-}
-.btn-primary {
-background: linear-gradient(135deg, #667eea, #764ba2);
-color: white;
-}
-.status {
-padding: 15px;
-border-radius: 8px;
-text-align: center;
-font-weight: 600;
-margin: 20px 0;
-transition: all 0.3s ease;
-}
-.success {
-background: #d4edda;
-color: #155724;
-border: 1px solid #c3e6cb;
-}
-.error {
-background: #f8d7da;
-color: #721c24;
-border: 1px solid #f5c6cb;
-}
-.info {
-background: #d1ecf1;
-color: #0c5460;
-border: 1px solid #bee5eb;
-}
-.instructions {
-background: #e7f3ff;
-padding: 20px;
-border-radius: 8px;
-border-left: 4px solid #667eea;
-margin-top: 20px;
-}
-.instructions h4 {
-color: #333;
-margin-bottom: 15px;
-}
-.help-text {
-font-size: 13px;
-}
-</style>
-<div class="header">
-Configurações do BotConfigurar a API Arrocy-WG para utilizar Token e URL.
-Configuração da API
-<label for="apiUrl">URL da API Arrocy-WG<input type="text" id="apiUrl" placeholder="Insira a URL da API">
-<div class="input-group">
-<label for="apiToken">Token de Acesso<input type="text" id="apiToken" placeholder="Insira o Token de Acesso">
-<div class="button-group">
-<button class="btn-primary" onclick="connectToAPI()">Conectar à API<div class="results-section">
-Resultados
-function connectToAPI() {
-const apiUrl = document.getElementById('apiUrl').value;
-const apiToken = document.getElementById('apiToken').value;
-// Exemplo de chamada à API utilizando Fetch
-fetch(apiUrl, {
-method: 'GET',
-headers: {
-'Authorization': Bearer ${apiToken}
-}
-})
-.then(response => response.json())
-.then(data => {
-document.getElementById('convertedLinks').innerText = JSON.stringify(data);
-})
-.catch(error => {
-console.error('Erro:', error);
-});
-}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bot Shopee - ReJStore</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{ --bg-light:#0f172a; --accent1:#7b61ff; --accent2:#ff6b8a; --muted:#9aa3c1; }
+    *{box-sizing:border-box} html,body{height:100%} body{margin:0;font-family:'Inter',system-ui,Arial;background:linear-gradient(180deg,#0b1020 0%, #1b1333 100%);color:#e6eef8;padding:28px}
+    .wrap{max-width:1200px;margin:0 auto}
+    .topbar{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .brand h1{margin:0;font-size:20px} .small{font-size:13px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(3,7,18,0.6);border:1px solid rgba(255,255,255,0.04)}
+    label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+    input[type="text"], input[type="number"], textarea, select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;font-size:14px}
+    textarea{min-height:90px;resize:vertical}
+    .btn{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;border:none;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    #messagesList{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+    .message-card{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,0.03)}
+    .message-card .meta{display:flex;gap:8px;margin-bottom:8px}
+    .message-card input, .message-card select{padding:8px}
+    .message-card textarea{min-height:68px}
+    .log{background:#06060a;color:#9be88d;font-family:'Roboto Mono',monospace;padding:12px;border-radius:8px;height:300px;overflow:auto;white-space:pre-wrap;border:1px solid rgba(155,232,141,0.06)}
+    .controls{display:flex;gap:8px;align-items:center}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}.log{height:180px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Bot Shopee — ReJStore</h1>
+        <p class="small">Enviar mensagens com templates, editar por destinatário e logs profissionais</p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h3 style="margin:0 0 10px">Configurações</h3>
+          <label>Endpoint da API</label>
+          <input id="apiUrl" placeholder="https://sua-api.exemplo/send-message" type="text" />
+
+          <label style="margin-top:8px">Token / Authorization</label>
+          <input id="apiToken" placeholder="Bearer ABC... (ou token puro)" type="text" />
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <div style="flex:1">
+              <label>Delay entre envios (ms)</label>
+              <input id="sendDelay" type="number" value="1500" />
+            </div>
+            <div style="width:160px">
+              <label>Validação</label>
+              <select id="validateResponse"><option value="auto">Auto (2xx)</option><option value="json">JSON success</option></select>
+            </div>
+          </div>
+
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+
+          <label>Template de mensagem (use <code>{link}</code>)</label>
+          <textarea id="customMessage">Confira: {link}
+💎 Promoção ReJStore!</textarea>
+
+          <label style="margin-top:8px">Links Shopee (um por linha)</label>
+          <textarea id="linksInput" placeholder="Cole os links aqui, um por linha..."></textarea>
+
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button id="btnConvert" class="btn">Converter</button>
+            <button id="btnClearMessages" class="btn ghost">Limpar</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 style="margin:0 0 10px">Mensagens Geradas</h3>
+          <div id="messagesList"></div>
+
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+            <button id="btnSendAll" class="btn">Enviar Tudo</button>
+            <button id="btnSendPreview" class="btn ghost">Enviar Selecionadas</button>
+            <div style="flex:1"></div>
+            <button id="btnExport" class="btn ghost">Exportar CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h3 style="margin:0 0 10px">Log detalhado</h3>
+          <div class="controls" style="margin-bottom:8px">
+            <button id="btnCopyLog" class="btn ghost">Copiar</button>
+            <button id="btnClearLog" class="btn ghost">Limpar</button>
+            <div style="flex:1" class="small">Últimas entradas aparecem no topo</div>
+          </div>
+          <div id="apiLog" class="log"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Personalização de envio</h4>
+          <label>Headers extras (formato chave:valor, separados por vírgula)</label>
+          <input id="extraHeaders" placeholder="X-Custom:value, X-Other:foo" />
+
+          <label style="margin-top:8px">Template do body (JSON) — use <code>{message}</code>, <code>{link}</code>, <code>{phone}</code></label>
+          <textarea id="bodyTemplate">{"message":"{message}"}</textarea>
+          <p class="small">Personalize o payload se sua API espera um formato específico.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    // util
+    function safeJsonParse(s){ try{ return JSON.parse(s); }catch(e){ return null; } }
+    function parseExtraHeaders(s){ const out={}; if(!s) return out; s.split(',').map(p=>p.trim()).filter(Boolean).forEach(pair=>{ const parts=pair.split(':'); const k=parts.shift().trim(); const v=parts.join(':').trim(); if(k) out[k]=v; }); return out; }
+
+    const btnConvert = document.getElementById('btnConvert');
+    const btnClearMessages = document.getElementById('btnClearMessages');
+    const messagesList = document.getElementById('messagesList');
+    const btnSendAll = document.getElementById('btnSendAll');
+    const btnSendPreview = document.getElementById('btnSendPreview');
+    const apiLog = document.getElementById('apiLog');
+    const btnCopyLog = document.getElementById('btnCopyLog');
+    const btnClearLog = document.getElementById('btnClearLog');
+    const btnExport = document.getElementById('btnExport');
+
+    function log(text){ const now=new Date().toISOString(); apiLog.textContent = `[${now}] ${text}
+
+` + apiLog.textContent; }
+
+    btnConvert.addEventListener('click', ()=>{
+      messagesList.innerHTML='';
+      // split by one or more newlines — fixes invalid regex error
+      const raw = (document.getElementById('linksInput').value||'').trim().split(/
++/).map(l=>l.trim()).filter(Boolean);
+      const template = document.getElementById('customMessage').value || '{link}';
+
+      raw.forEach((link,idx)=>{
+        const wrapper = document.createElement('div'); wrapper.className='message-card';
+        const meta = document.createElement('div'); meta.className='meta';
+        const phone = document.createElement('input'); phone.placeholder='Destinatário (telefone ou id)'; phone.dataset.idx=idx;
+        const selectBox = document.createElement('select'); selectBox.innerHTML='<option value="whatsapp">WhatsApp</option><option value="instagram">Instagram</option>';
+        meta.appendChild(phone); meta.appendChild(selectBox);
+
+        const ta = document.createElement('textarea'); ta.value = template.replace(/{link}/g, link); ta.dataset.link=link; ta.dataset.idx=idx;
+
+        const chk = document.createElement('input'); chk.type='checkbox'; chk.checked=true; chk.style.marginLeft='8px';
+        const chkLabel = document.createElement('label'); chkLabel.textContent='Enviar?'; chkLabel.style.marginLeft='6px';
+
+        wrapper.appendChild(meta); wrapper.appendChild(ta);
+
+        const footer = document.createElement('div'); footer.style.display='flex'; footer.style.justifyContent='space-between'; footer.style.marginTop='8px';
+        const left = document.createElement('div'); left.appendChild(chk); left.appendChild(chkLabel);
+        const right = document.createElement('div');
+        const btnPreview = document.createElement('button'); btnPreview.className='btn ghost'; btnPreview.textContent='Enviar só esta';
+        btnPreview.addEventListener('click', ()=> sendSingle((phone.value||'').trim(), ta.value, selectBox.value, link));
+        right.appendChild(btnPreview);
+        footer.appendChild(left); footer.appendChild(right);
+
+        wrapper.appendChild(footer);
+        messagesList.appendChild(wrapper);
+      });
+
+      log(`Geradas ${raw.length} mensagem(s)`);
+    });
+
+    btnClearMessages.addEventListener('click', ()=>{ messagesList.innerHTML=''; log('Mensagens limpas pelo usuário'); });
+    btnCopyLog.addEventListener('click', ()=>{ navigator.clipboard.writeText(apiLog.textContent||'').then(()=>log('Log copiado para área de transferência')); });
+    btnClearLog.addEventListener('click', ()=>{ apiLog.textContent=''; log('Log limpo pelo usuário'); });
+
+    btnExport.addEventListener('click', ()=>{
+      const rows = [...document.querySelectorAll('#messagesList .message-card')].map(card=>{ const phone = card.querySelector('input')?.value||''; const msg = card.querySelector('textarea')?.value||''; return `"${phone.replace(/"/g,'""')}","${msg.replace(/"/g,'""')}`; });
+      const csv = 'phone,message
+' + rows.join('
+'); const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='messages.csv'; a.click(); URL.revokeObjectURL(url);
+      log('Exportado CSV com ' + rows.length + ' linhas');
+    });
+
+    btnSendAll.addEventListener('click', async ()=>{
+      const cards = [...document.querySelectorAll('#messagesList .message-card')]; if(!cards.length){ log('Nenhuma mensagem gerada.'); return; }
+      const apiUrl = (document.getElementById('apiUrl').value||'').trim(); const token = (document.getElementById('apiToken').value||'').trim(); const delay = parseInt(document.getElementById('sendDelay').value||1500,10);
+      const extraHeaders = parseExtraHeaders(document.getElementById('extraHeaders').value||''); const validate = document.getElementById('validateResponse').value; const bodyTemplate = document.getElementById('bodyTemplate').value || '{"message":"{message}"}';
+      if(!apiUrl){ log('Erro: URL da API não configurada'); return; } if(!token){ log('Erro: Token não configurado'); return; }
+      log('Iniciando envio de todas as mensagens...');
+      for(const card of cards){ const phone = (card.querySelector('input')?.value||'').trim(); const platform = (card.querySelector('select')?.value||'whatsapp'); const message = (card.querySelector('textarea')?.value||'').trim(); const shouldSend = card.querySelector('input[type="checkbox"]').checked; if(!shouldSend){ log('Pulado (marcado para não enviar)'); continue; }
+        await sendWithOptions({apiUrl, token, extraHeaders, bodyTemplate, validate, phone, platform, message}); await new Promise(r=>setTimeout(r, delay)); }
+      log('Envio em lote finalizado');
+    });
+
+    btnSendPreview.addEventListener('click', async ()=>{
+      const selected = [...document.querySelectorAll('#messagesList .message-card')].filter(card=>card.querySelector('input[type="checkbox"]').checked);
+      if(!selected.length){ log('Nenhuma mensagem selecionada para envio'); return; }
+      log('Enviando apenas selecionadas...');
+      for(const card of selected){ const phone = (card.querySelector('input')?.value||'').trim(); const message = (card.querySelector('textarea')?.value||'').trim(); const platform = (card.querySelector('select')?.value||'whatsapp'); await sendWithOptions({apiUrl:document.getElementById('apiUrl').value, token:document.getElementById('apiToken').value, extraHeaders:parseExtraHeaders(document.getElementById('extraHeaders').value||''), bodyTemplate:document.getElementById('bodyTemplate').value||'{"message":"{message}"}', validate:document.getElementById('validateResponse').value, phone, platform, message}); }
+      log('Envio selecionado finalizado');
+    });
+
+    async function sendSingle(phone, message, platform, link){ const apiUrl = (document.getElementById('apiUrl').value||'').trim(); const token = (document.getElementById('apiToken').value||'').trim(); const extraHeaders = parseExtraHeaders(document.getElementById('extraHeaders').value||''); const bodyTemplate = document.getElementById('bodyTemplate').value || '{"message":"{message}"}'; if(!apiUrl || !token){ log('API URL ou token não configurados'); return; } await sendWithOptions({apiUrl, token, extraHeaders, bodyTemplate, validate:document.getElementById('validateResponse').value, phone, platform, message}); }
+
+    async function sendWithOptions(opts){
+      try{
+        const {apiUrl, token, extraHeaders, bodyTemplate, validate, phone, platform, message} = opts;
+
+        // build payload safely: try parse JSON template, replace placeholders inside JSON string
+        let payload;
+        const tpl = safeJsonParse(bodyTemplate);
+        if(tpl && typeof tpl === 'object'){
+          let str = JSON.stringify(tpl);
+          const escMsg = (message||'').replace(/\/g,'\\').replace(/"/g,'\"');
+          const escLink = (opts.link||'').replace(/\/g,'\\').replace(/"/g,'\"');
+          str = str.replace(/\{message\}/g, escMsg).replace(/\{link\}/g, escLink).replace(/\{phone\}/g, phone);
+          try{ payload = JSON.parse(str); }catch(e){ payload = { message }; }
+        } else {
+          // bodyTemplate isn't valid JSON — treat as plain string template and send as { message: '...' }
+          const built = (bodyTemplate||'').replace(/\{message\}/g, message).replace(/\{link\}/g, opts.link||'').replace(/\{phone\}/g, phone);
+          try{ payload = JSON.parse(built); }catch(e){ payload = { message: message }; }
+        }
+
+        const headers = Object.assign({'Content-Type':'application/json','Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`}, extraHeaders);
+        log(`-> POST ${apiUrl}`);
+        log(`   headers: ${JSON.stringify(headers)}`);
+        log(`   body: ${JSON.stringify(payload)}`);
+
+        const res = await fetch(apiUrl, { method:'POST', headers:headers, body: JSON.stringify(payload) });
+        const text = await res.text();
+        log(`<-- HTTP ${res.status} ${res.statusText}
+body: ${text}`);
+
+        if(validate==='json'){ const j = safeJsonParse(text); if(j && (j.success || j.sent || j.status==='success')){ log('✔ Sucesso (json)'); return true; } log('✖ Falha na validação JSON'); return false; }
+        if(res.status>=200 && res.status<300){ log('✔ Sucesso (HTTP)'); return true; } log('✖ Falha HTTP'); return false;
+      }catch(e){ log('Erro ao enviar: '+(e.message||e)); return false; }
+    }
+
+    function escapeJson(s){ return String(s).replace(/\/g,'\\').replace(/"/g,'\"'); }
+
+    window._shopeeDebug = { sendWithOptions, parseExtraHeaders };
+  })();
+  </script>
+</body>
+</html>
